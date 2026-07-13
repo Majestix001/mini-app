@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Услуги для девушки</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-container {
+            width: 100%;
+            max-width: 400px;
+            height: 6px;
+            background: var(--tg-theme-secondary-bg-color, #e0e0e0);
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--tg-theme-button-color, #0088cc);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .counter {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+        
+        /* Карточка */
+        .card-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 500px;
+            perspective: 1000px;
+        }
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+        }
+        .card:active {
+            cursor: grabbing;
+        }
+        
+        .card-number {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 14px;
+            opacity: 0.5;
+        }
+        
+        .card-emoji {
+            font-size: 80px;
+            margin-bottom: 24px;
+        }
+        
+        .card-title {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        
+        /* Свайп-индикаторы */
+        .swipe-hint {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 60px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+        .swipe-hint.left {
+            left: 20px;
+            color: #ff4444;
+        }
+        .swipe-hint.right {
+            right: 20px;
+            color: #44bb44;
+        }
+        
+        .card.swiping-left .swipe-hint.left { opacity: 0.8; }
+        .card.swiping-right .swipe-hint.right { opacity: 0.8; }
+        
+        /* Финал */
+        #final-screen {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            flex-direction: column;
+            gap: 16px;
+            padding: 20px 0;
+        }
+        
+        #final-screen h2 {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .final-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 12px;
+            font-size: 16px;
+        }
+        .final-item .emoji { font-size: 24px; }
+        
+        .final-item.yes { border-left: 4px solid #44bb44; }
+        
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--tg-theme-secondary-bg-color, #ddd);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            color: var(--tg-theme-text-color, #000);
+            outline: none;
+        }
+        textarea:focus {
+            border-color: var(--tg-theme-button-color, #0088cc);
+        }
+        
+        .send-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--tg-theme-button-color, #0088cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .send-btn:active { opacity: 0.7; }
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Инструкция */
+        #instruction {
+            text-align: center;
+            padding: 20px 0;
+        }
+        #instruction h1 {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+        #instruction p {
+            font-size: 18px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+        .instruction-icons {
+            font-size: 48px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+        }
+        .instruction-icons span {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .instruction-icons span small {
+            font-size: 14px;
+            opacity: 0.6;
+        }
+        
+        .start-btn {
+            padding: 16px 60px;
+            background: var(--tg-theme-button-color, #0088cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: opacity 0.2s;
+        }
+        .start-btn:active { opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+<!-- ЭКРАН ИНСТРУКЦИИ -->
+<div id="instruction">
+    <h1>💝 Привет!</h1>
+    <p>Я подготовил 10 услуг специально для тебя</p>
+    <div class="instruction-icons">
+        <span>👈<small>Нет</small></span>
+        <span>👉<small>Да</small></span>
+    </div>
+    <p style="font-size:14px; opacity:0.5;">Свайпай карточки влево или вправо</p>
+    <button class="start-btn" onclick="startQuiz()">Начать 💫</button>
+</div>
+
+<!-- ОСНОВНОЙ ЭКРАН -->
+<div id="quiz" style="display:none; width:100%; display:none; flex-direction:column; align-items:center;">
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="counter" id="counter">1 / 10</div>
+    <div class="card-container" id="cardContainer">
+        <!-- Карточки будут создаваться JS -->
+    </div>
+</div>
+
+<!-- ФИНАЛЬНЫЙ ЭКРАН -->
+<div id="final-screen">
+    <h2>✨ Готово!</h2>
+    <div id="finalList"></div>
+    <textarea id="wishInput" placeholder="Оставь пожелание (необязательно)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendResults()">Отправить 💌</button>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    const user = tg.initDataUnsafe?.user || {};
+    const username = user.username || 'Неизвестно';
+    const userId = user.id || 'Неизвестно';
+
+    // СПИСОК УСЛУГ
+    const services = [
+        { emoji: '👶', title: 'Посмотрю с тобой беременна в 16' },
+        { emoji: '🐱', title: 'Заведу с тобой котенка' },
+        { emoji: '🩲', title: 'Приму в дар твои трусы' },
+        { emoji: '👹', title: 'Договорюсь с монстрами, чтобы тебя ночью не трогали и колыбельную спою' },
+        { emoji: '💔', title: 'Изменять не буду' },
+        { emoji: '🌹', title: 'Необычное свидание' },
+        { emoji: '🍉', title: 'Куплю арбуз' },
+        { emoji: '⛪️', title: 'Исповедаю и отпущу грехи' },
+        { emoji: '💆', title: 'Массаж' },
+        { emoji: '🍳', title: 'Завтрак в постель' }
+    ];
+
+    let currentIndex = 0;
+    let results = { yes: [], no: [] };
+    let isAnimating = false;
+
+    const cardContainer = document.getElementById('cardContainer');
+    const progressBar = document.getElementById('progressBar');
+    const counter = document.getElementById('counter');
+
+    function renderCard(index) {
+        if (index >= services.length) {
+            showFinal();
+            return;
+        }
+
+        const service = services[index];
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <div class="card-number">${index + 1} / ${services.length}</div>
+            <div class="card-emoji">${service.emoji}</div>
+            <div class="card-title">${service.title}</div>
+            <div class="swipe-hint left">✕</div>
+            <div class="swipe-hint right">✓</div>
+        `;
+
+        cardContainer.innerHTML = '';
+        cardContainer.appendChild(card);
+
+        const progress = ((index) / services.length) * 100;
+        progressBar.style.width = progress + '%';
+        counter.textContent = `${index + 1} / ${services.length}`;
+
+        let startX = 0, startY = 0;
+        let isDragging = false;
+        let currentX = 0;
+
+        function onStart(e) {
+            if (isAnimating) return;
+            const touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startY = touch.clientY;
+            isDragging = true;
+            currentX = 0;
+            card.style.transition = 'none';
+        }
+
+        function onMove(e) {
+            if (!isDragging || isAnimating) return;
+            const touch = e.touches ? e.touches[0] : e;
+            const dx = touch.clientX - startX;
+            const dy = touch.clientY - startY;
+            
+            if (Math.abs(dy) > Math.abs(dx) * 1.5) {
+                return;
+            }
+
+            currentX = dx;
+            const rotate = dx * 0.08;
+            const opacity = Math.min(Math.abs(dx) / 150, 1);
+            
+            card.style.transform = `translateX(${dx}px) rotate(${rotate}deg)`;
+            card.style.opacity = 1 - opacity * 0.3;
+            
+            if (dx > 0) {
+                card.classList.add('swiping-right');
+                card.classList.remove('swiping-left');
+            } else if (dx < 0) {
+                card.classList.add('swiping-left');
+                card.classList.remove('swiping-right');
+            } else {
+                card.classList.remove('swiping-left', 'swiping-right');
+            }
+        }
+
+        function onEnd(e) {
+            if (!isDragging || isAnimating) return;
+            isDragging = false;
+            card.classList.remove('swiping-left', 'swiping-right');
+            
+            const threshold = 100;
+            if (currentX > threshold) {
+                swipeCard('right');
+            } else if (currentX < -threshold) {
+                swipeCard('left');
+            } else {
+                card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                card.style.transform = '';
+                card.style.opacity = '';
+            }
+        }
+
+        card.addEventListener('mousedown', onStart);
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+        
+        card.addEventListener('touchstart', onStart, { passive: true });
+        document.addEventListener('touchmove', onMove, { passive: true });
+        document.addEventListener('touchend', onEnd, { passive: true });
+
+        card._cleanup = () => {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onEnd);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
+        };
+    }
+
+    function swipeCard(direction) {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        const card = cardContainer.querySelector('.card');
+        const service = services[currentIndex];
+        
+        if (direction === 'right') {
+            results.yes.push(service.title);
+            card.style.transform = 'translateX(500px) rotate(20deg)';
+            card.style.opacity = '0';
+        } else {
+            results.no.push(service.title);
+            card.style.transform = 'translateX(-500px) rotate(-20deg)';
+            card.style.opacity = '0';
+        }
+
+        if (navigator.vibrate) navigator.vibrate(10);
+
+        setTimeout(() => {
+            card._cleanup?.();
+            currentIndex++;
+            isAnimating = false;
+            renderCard(currentIndex);
+        }, 300);
+    }
+
+    function startQuiz() {
+        document.getElementById('instruction').style.display = 'none';
+        document.getElementById('quiz').style.display = 'flex';
+        renderCard(0);
+    }
+
+    function showFinal() {
+        document.getElementById('quiz').style.display = 'none';
+        document.getElementById('final-screen').style.display = 'flex';
+        
+        const list = document.getElementById('finalList');
+        let html = '';
+        
+        // Показываем только то, на что согласилась (да)
+        if (results.yes.length > 0) {
+            html += '<h3 style="color:#44bb44; text-align:center; margin-bottom:12px;">✅ Ты согласилась на:</h3>';
+            results.yes.forEach(item => {
+                html += `<div class="final-item yes"><span class="emoji">👍</span> ${item}</div>`;
+            });
+        } else {
+            html += '<p style="text-align:center; opacity:0.6;">Ты ничего не выбрала 😅</p>';
+        }
+        
+        // Не показываем список отказов
+        list.innerHTML = html;
+    }
+
+    function sendResults() {
+        const wish = document.getElementById('wishInput').value;
+        const btn = document.getElementById('sendBtn');
+        btn.disabled = true;
+        btn.textContent = 'Отправка...';
+
+        const data = {
+            user_id: userId,
+            username: username,
+            yes_list: results.yes,
+            no_list: results.no,
+            wish: wish
+        };
+
+        tg.sendData(JSON.stringify(data));
+        tg.showAlert('Спасибо, ответы отправлены!');
+        tg.close();
+    }
+</script>
+</body>
+</html>
