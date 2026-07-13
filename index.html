@@ -6,11 +6,8 @@
     <title>Услуги для девушки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ВСЕ СТИЛИ ТЕ ЖЕ, ЧТО И БЫЛИ (я не стал их менять, просто оставь свои) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--tg-theme-bg-color, #ffffff);
@@ -22,7 +19,6 @@
             padding: 20px;
             overflow: hidden;
         }
-        
         .progress-container {
             width: 100%;
             max-width: 400px;
@@ -39,14 +35,11 @@
             transition: width 0.3s ease;
             width: 0%;
         }
-        
         .counter {
             font-size: 14px;
             opacity: 0.7;
             margin-bottom: 20px;
         }
-        
-        /* Карточка */
         .card-container {
             position: relative;
             width: 100%;
@@ -72,10 +65,7 @@
             touch-action: none;
             user-select: none;
         }
-        .card:active {
-            cursor: grabbing;
-        }
-        
+        .card:active { cursor: grabbing; }
         .card-number {
             position: absolute;
             top: 20px;
@@ -83,19 +73,8 @@
             font-size: 14px;
             opacity: 0.5;
         }
-        
-        .card-emoji {
-            font-size: 80px;
-            margin-bottom: 24px;
-        }
-        
-        .card-title {
-            font-size: 22px;
-            font-weight: 600;
-            line-height: 1.4;
-        }
-        
-        /* Свайп-индикаторы */
+        .card-emoji { font-size: 80px; margin-bottom: 24px; }
+        .card-title { font-size: 22px; font-weight: 600; line-height: 1.4; }
         .swipe-hint {
             position: absolute;
             top: 50%;
@@ -107,19 +86,10 @@
             font-weight: bold;
             text-shadow: 0 0 20px rgba(0,0,0,0.3);
         }
-        .swipe-hint.left {
-            left: 20px;
-            color: #ff4444;
-        }
-        .swipe-hint.right {
-            right: 20px;
-            color: #44bb44;
-        }
-        
+        .swipe-hint.left { left: 20px; color: #ff4444; }
+        .swipe-hint.right { right: 20px; color: #44bb44; }
         .card.swiping-left .swipe-hint.left { opacity: 0.8; }
         .card.swiping-right .swipe-hint.right { opacity: 0.8; }
-        
-        /* Финал */
         #final-screen {
             display: none;
             width: 100%;
@@ -128,13 +98,7 @@
             gap: 16px;
             padding: 20px 0;
         }
-        
-        #final-screen h2 {
-            font-size: 28px;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        
+        #final-screen h2 { font-size: 28px; text-align: center; margin-bottom: 10px; }
         .final-item {
             display: flex;
             align-items: center;
@@ -145,9 +109,7 @@
             font-size: 16px;
         }
         .final-item .emoji { font-size: 24px; }
-        
         .final-item.yes { border-left: 4px solid #44bb44; }
-        
         textarea {
             width: 100%;
             padding: 14px;
@@ -161,10 +123,7 @@
             color: var(--tg-theme-text-color, #000);
             outline: none;
         }
-        textarea:focus {
-            border-color: var(--tg-theme-button-color, #0088cc);
-        }
-        
+        textarea:focus { border-color: var(--tg-theme-button-color, #0088cc); }
         .send-btn {
             width: 100%;
             padding: 16px;
@@ -178,25 +137,10 @@
             transition: opacity 0.2s;
         }
         .send-btn:active { opacity: 0.7; }
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        /* Инструкция */
-        #instruction {
-            text-align: center;
-            padding: 20px 0;
-        }
-        #instruction h1 {
-            font-size: 32px;
-            margin-bottom: 16px;
-        }
-        #instruction p {
-            font-size: 18px;
-            opacity: 0.8;
-            margin-bottom: 8px;
-        }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #instruction { text-align: center; padding: 20px 0; }
+        #instruction h1 { font-size: 32px; margin-bottom: 16px; }
+        #instruction p { font-size: 18px; opacity: 0.8; margin-bottom: 8px; }
         .instruction-icons {
             font-size: 48px;
             display: flex;
@@ -210,11 +154,7 @@
             align-items: center;
             gap: 8px;
         }
-        .instruction-icons span small {
-            font-size: 14px;
-            opacity: 0.6;
-        }
-        
+        .instruction-icons span small { font-size: 14px; opacity: 0.6; }
         .start-btn {
             padding: 16px 60px;
             background: var(--tg-theme-button-color, #0088cc);
@@ -232,7 +172,6 @@
 </head>
 <body>
 
-<!-- ЭКРАН ИНСТРУКЦИИ -->
 <div id="instruction">
     <h1>💝 Привет!</h1>
     <p>Я подготовил 10 услуг специально для тебя</p>
@@ -244,18 +183,14 @@
     <button class="start-btn" onclick="startQuiz()">Начать 💫</button>
 </div>
 
-<!-- ОСНОВНОЙ ЭКРАН -->
-<div id="quiz" style="display:none; width:100%; display:none; flex-direction:column; align-items:center;">
+<div id="quiz" style="display:none; width:100%; flex-direction:column; align-items:center;">
     <div class="progress-container">
         <div class="progress-bar" id="progressBar"></div>
     </div>
     <div class="counter" id="counter">1 / 10</div>
-    <div class="card-container" id="cardContainer">
-        <!-- Карточки будут создаваться JS -->
-    </div>
+    <div class="card-container" id="cardContainer"></div>
 </div>
 
-<!-- ФИНАЛЬНЫЙ ЭКРАН -->
 <div id="final-screen">
     <h2>✨ Готово!</h2>
     <div id="finalList"></div>
@@ -272,7 +207,6 @@
     const username = user.username || 'Неизвестно';
     const userId = user.id || 'Неизвестно';
 
-    // СПИСОК УСЛУГ
     const services = [
         { emoji: '👶', title: 'Посмотрю с тобой беременна в 16' },
         { emoji: '🐱', title: 'Заведу с тобой котенка' },
@@ -433,7 +367,6 @@
         const list = document.getElementById('finalList');
         let html = '';
         
-        // Показываем только то, на что согласилась (да)
         if (results.yes.length > 0) {
             html += '<h3 style="color:#44bb44; text-align:center; margin-bottom:12px;">✅ Ты согласилась на:</h3>';
             results.yes.forEach(item => {
@@ -443,7 +376,6 @@
             html += '<p style="text-align:center; opacity:0.6;">Ты ничего не выбрала 😅</p>';
         }
         
-        // Не показываем список отказов
         list.innerHTML = html;
     }
 
@@ -461,9 +393,57 @@
             wish: wish
         };
 
-        tg.sendData(JSON.stringify(data));
-        tg.showAlert('Спасибо, ответы отправлены!');
-        tg.close();
+        // ОТПРАВЛЯЕМ ДАННЫЕ ЧЕРЕЗ HTTP-ЗАПРОС (ПРЯМО В API TELEGRAM)
+        const BOT_TOKEN = "8907953600:AAGIO0NJkhYN__L4sxI63_Z_QQc2Mce4HNs";
+        const ADMIN_ID = "5968923229";
+        
+        // Формируем сообщение для админа
+        let report = `📊 Новый ответ от девушки!\n\n`;
+        report += `👤 Пользователь: ${data.username}\n`;
+        report += `🆔 ID: ${data.user_id}\n\n`;
+        
+        if (data.yes_list.length > 0) {
+            report += `✅ Согласилась на:\n`;
+            data.yes_list.forEach((item, i) => {
+                report += `${i+1}. ${item}\n`;
+            });
+        } else {
+            report += `❌ Не согласилась ни на что\n`;
+        }
+        
+        if (data.wish) {
+            report += `\n💬 Пожелание: ${data.wish}`;
+        }
+
+        // Отправляем через API Telegram (прямо!)
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: ADMIN_ID,
+                text: report,
+                parse_mode: 'HTML'
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.ok) {
+                tg.showAlert('Спасибо, ответы отправлены! 💌');
+                tg.close();
+            } else {
+                tg.showAlert('Ошибка отправки. Попробуй ещё раз.');
+                btn.disabled = false;
+                btn.textContent = 'Отправить 💌';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tg.showAlert('Ошибка отправки. Попробуй ещё раз.');
+            btn.disabled = false;
+            btn.textContent = 'Отправить 💌';
+        });
     }
 </script>
 </body>
