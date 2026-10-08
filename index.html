@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Услуги для девушки</title>
+    <title>Предложения для девушки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* ВСЕ СТИЛИ ТЕ ЖЕ, ЧТО И БЫЛИ (я не стал их менять, просто оставь свои) */
@@ -110,20 +110,34 @@
         }
         .final-item .emoji { font-size: 24px; }
         .final-item.yes { border-left: 4px solid #44bb44; }
+        .comment-box {
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            border-radius: 20px;
+            padding: 18px;
+            margin-top: 8px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+        }
+        .comment-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+        .comment-sub { font-size: 14px; opacity: 0.6; margin-bottom: 12px; }
         textarea {
             width: 100%;
             padding: 14px;
-            border: 2px solid var(--tg-theme-secondary-bg-color, #ddd);
-            border-radius: 12px;
+            border: 2px solid transparent;
+            border-radius: 14px;
             font-size: 16px;
             font-family: inherit;
-            resize: vertical;
-            min-height: 100px;
-            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            resize: none;
+            min-height: 110px;
+            background: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000);
             outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        textarea:focus { border-color: var(--tg-theme-button-color, #0088cc); }
+        textarea:focus {
+            border-color: var(--tg-theme-button-color, #0088cc);
+            box-shadow: 0 0 0 4px rgba(0,136,204,0.12);
+        }
+        .char-counter { text-align: right; font-size: 12px; opacity: 0.5; margin-top: 6px; }
         .send-btn {
             width: 100%;
             padding: 16px;
@@ -174,7 +188,7 @@
 
 <div id="instruction">
     <h1>💝 Привет!</h1>
-    <p>Я подготовил 10 услуг специально для тебя</p>
+    <p>Я подготовил 10 предложений специально для тебя</p>
     <div class="instruction-icons">
         <span>👈<small>Нет</small></span>
         <span>👉<small>Да</small></span>
@@ -194,7 +208,12 @@
 <div id="final-screen">
     <h2>✨ Готово!</h2>
     <div id="finalList"></div>
-    <textarea id="wishInput" placeholder="Оставь пожелание (необязательно)"></textarea>
+    <div class="comment-box">
+        <div class="comment-title">💬 Хочешь что-то добавить?</div>
+        <div class="comment-sub">Напиши пару слов, это необязательно</div>
+        <textarea id="wishInput" maxlength="500" placeholder="Твой комментарий..." oninput="document.getElementById('charCount').textContent = this.value.length"></textarea>
+        <div class="char-counter"><span id="charCount">0</span> / 500</div>
+    </div>
     <button class="send-btn" id="sendBtn" onclick="sendResults()">Отправить 💌</button>
 </div>
 
@@ -213,11 +232,11 @@
         { emoji: '🩲', title: 'Приму в дар твои трусы' },
         { emoji: '👹', title: 'Договорюсь с монстрами, чтобы тебя ночью не трогали и колыбельную спою' },
         { emoji: '💔', title: 'Изменять не буду' },
-        { emoji: '🌹', title: 'Необычное свидание' },
+        { emoji: '🍔', title: 'Комбо в Бургер Кинг' },
         { emoji: '🍉', title: 'Куплю арбуз' },
         { emoji: '⛪️', title: 'Исповедаю и отпущу грехи' },
         { emoji: '💆', title: 'Массаж' },
-        { emoji: '🍳', title: 'Завтрак в постель' }
+        { emoji: '👅', title: 'Полижу письку' }
     ];
 
     let currentIndex = 0;
@@ -379,6 +398,10 @@
         list.innerHTML = html;
     }
 
+    function esc(t) {
+        return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
     function sendResults() {
         const wish = document.getElementById('wishInput').value;
         const btn = document.getElementById('sendBtn');
@@ -399,20 +422,20 @@
         
         // Формируем сообщение для админа
         let report = `📊 Новый ответ от девушки!\n\n`;
-        report += `👤 Пользователь: ${data.username}\n`;
+        report += `👤 Пользователь: ${esc(data.username)}\n`;
         report += `🆔 ID: ${data.user_id}\n\n`;
         
         if (data.yes_list.length > 0) {
             report += `✅ Согласилась на:\n`;
             data.yes_list.forEach((item, i) => {
-                report += `${i+1}. ${item}\n`;
+                report += `${i+1}. ${esc(item)}\n`;
             });
         } else {
             report += `❌ Не согласилась ни на что\n`;
         }
         
         if (data.wish) {
-            report += `\n💬 Пожелание: ${data.wish}`;
+            report += `\n💬 Комментарий: ${esc(data.wish)}`;
         }
 
         // Отправляем через API Telegram (прямо!)
