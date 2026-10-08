@@ -13,11 +13,12 @@
             background: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
-            overflow: hidden;
+            overflow-x: hidden;
         }
         .progress-container {
             width: 100%;
@@ -96,7 +97,7 @@
             max-width: 400px;
             flex-direction: column;
             gap: 16px;
-            padding: 20px 0;
+            padding: 20px 0 60px;
         }
         #final-screen h2 { font-size: 28px; text-align: center; margin-bottom: 10px; }
         .final-item {
@@ -188,7 +189,7 @@
 
 <div id="instruction">
     <h1>💝 Привет!</h1>
-    <p>Я подготовил 10 предложений специально для тебя</p>
+    <p>Я подготовил 11 предложений специально для тебя</p>
     <div class="instruction-icons">
         <span>👈<small>Нет</small></span>
         <span>👉<small>Да</small></span>
@@ -233,6 +234,7 @@
         { emoji: '👹', title: 'Договорюсь с монстрами, чтобы тебя ночью не трогали и колыбельную спою' },
         { emoji: '💔', title: 'Изменять не буду' },
         { emoji: '🍔', title: 'Комбо в Бургер Кинг' },
+        { emoji: '😈', title: 'Использую твой подарок' },
         { emoji: '🍉', title: 'Куплю арбуз' },
         { emoji: '⛪️', title: 'Исповедаю и отпущу грехи' },
         { emoji: '💆', title: 'Массаж' },
@@ -382,6 +384,8 @@
     function showFinal() {
         document.getElementById('quiz').style.display = 'none';
         document.getElementById('final-screen').style.display = 'flex';
+        document.body.style.overflowY = 'auto';
+        window.scrollTo(0, 0);
         
         const list = document.getElementById('finalList');
         let html = '';
@@ -417,7 +421,7 @@
         };
 
         // ОТПРАВЛЯЕМ ДАННЫЕ ЧЕРЕЗ HTTP-ЗАПРОС (ПРЯМО В API TELEGRAM)
-        const BOT_TOKEN = "8907953600:AAFg2vQroDDO1B3FJTuL6QdfyMTdCX31uM4";
+        const BOT_TOKEN = "ВСТАВЬ_НОВЫЙ_ТОКЕН";
         const ADMIN_ID = "5968923229";
         
         // Формируем сообщение для админа
